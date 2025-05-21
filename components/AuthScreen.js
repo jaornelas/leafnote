@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
 import auth from '@react-native-firebase/auth';
+import { firebaseApp } from '../firebaseConfig'; // Ensure this path is correct
 
 export default function AuthScreen({ navigation }) {
   const [email, setEmail] = useState('');
