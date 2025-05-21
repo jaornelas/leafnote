@@ -1,17 +1,54 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
-import auth from '@react-native-firebase/auth';
-import { firebaseApp } from '../firebaseConfig'; // Ensure this path is correct
+import auth, { getAuth } from '@react-native-firebase/auth';
+import {firebaseApp } from '../firebaseConfig'; // Ensure this path is correct
+import { sign } from 'crypto';
 
 export default function AuthScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    auth().signInWithEmailAndPassword(email, password)
-      .then(() => navigation.navigate('Create Note'))
-      .catch(err => console.error(err));
-  };
+  const handleLogin = async () => {
+    const auth = getAuth(firebaseApp);
+    // Check if email and password are provided
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      navigation.navigate('Create Note');
+    } catch (error) {
+      Alert.alert('Login Failed', error.message);
+    }
+  }
+  const handleSignUp = async () => {
+    const auth = getAuth(firebaseApp);
+    // Check if email and password are provided
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      navigation.navigate('Create Note');
+    } catch (error) {
+      Alert.alert('Sign Up Failed', error.message);
+    }
+  }
+  const handleForgotPassword = async () => {
+    const auth = getAuth(firebaseApp);
+    // Check if email is provided
+    try {
+      await sendPasswordResetEmail(auth, email);
+      Alert.alert('Password Reset', 'Check your email for password reset instructions');
+    } catch (error) {
+      Alert.alert('Reset Failed', error.message);
+    }
+  }
+  const handleLogout = async () => {
+    const auth = getAuth(firebaseApp);
+    // Check if user is logged in
+    try {
+      await signOut(auth);
+      Alert.alert('Logged Out', 'You have been logged out');
+    } catch (error) {
+      Alert.alert('Logout Failed', error.message);
+    }
+  }
+  
 
   return (
     <View style={styles.container}>
